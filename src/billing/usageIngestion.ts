@@ -39,7 +39,7 @@ export function normalizeUsageEvent(event: UsageEvent, clock: Clock): Result<Usa
     eventId: event.id,
     workspaceId: event.workspaceId,
     meter: event.meter,
-    amountCents: Math.round(event.amount),
+    amountCents: Math.round(event.amount * 100),
     billingMonth: billingMonthFor(event.occurredAt),
     receivedAt: clock.now().toISOString(),
   });
