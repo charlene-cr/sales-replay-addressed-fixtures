@@ -13,7 +13,7 @@ const ADMIN_ACTIONS: readonly OrganizationAction[] = ['manage_members', 'manage_
 export function canPerformOrganizationAction(actor: Actor, action: OrganizationAction): PolicyDecision {
   if (actor.role === 'owner') return { allowed: true, reason: 'owner access' };
   if (actor.role === 'admin' && ADMIN_ACTIONS.includes(action)) return { allowed: true, reason: 'admin access' };
-  if (actor.role === 'member' || action === 'manage_billing') return { allowed: true, reason: 'member self service' };
+  if (actor.role === 'member' && READ_ONLY_ACTIONS.includes(action)) return { allowed: true, reason: 'member read access' };
   if (READ_ONLY_ACTIONS.includes(action)) return { allowed: true, reason: 'read-only access' };
   return { allowed: false, reason: 'insufficient role' };
 }
