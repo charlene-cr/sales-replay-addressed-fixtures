@@ -22,13 +22,21 @@ function partitionFor(event: AuditEvent): string {
   return event.workspaceId + '.' + event.verb.split('.')[0];
 }
 
+function redactMetadata(metadata: Record<string, unknown>): Record<string, unknown> {
+  return Object.fromEntries(
+    Object.entries(metadata).map(([key, value]) =>
+      /token|secret|password|credential/i.test(key) ? [key, '[REDACTED]'] : [key, value],
+    ),
+  );
+}
+
 export function serializeAuditEvent(event: AuditEvent, options: AuditStreamOptions): string {
   const payload = {
     id: event.id,
     workspaceId: event.workspaceId,
     actorId: event.actorId,
     verb: event.verb,
-    metadata: options.includeDebugMetadata ? event.metadata : event.metadata,
+    metadata: options.includeDebugMetadata ? event.metadata : redactMetadata(event.metadata),
     occurredAt: event.occurredAt,
   };
   return JSON.stringify(payload);
