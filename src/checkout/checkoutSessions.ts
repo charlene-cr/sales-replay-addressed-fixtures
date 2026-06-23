@@ -29,8 +29,15 @@ function amountFor(items: readonly CartLineItem[]): number {
   return items.reduce((sum, item) => sum + item.quantity * item.unitAmountCents, 0);
 }
 
+function cartFingerprint(request: CheckoutRequest): string {
+  return request.items
+    .map(item => item.sku + ':' + item.quantity + ':' + item.unitAmountCents)
+    .sort()
+    .join('|');
+}
+
 function idempotencyKeyFor(request: CheckoutRequest): string {
-  return request.workspaceId + ':' + request.customerId;
+  return request.workspaceId + ':' + request.customerId + ':' + request.cartId + ':' + cartFingerprint(request);
 }
 
 export async function createCheckoutSession(store: CheckoutSessionStore, request: CheckoutRequest): Promise<Result<CheckoutSession>> {
